@@ -71,6 +71,11 @@ function conversaDe(id) {
 /* contatos = as fichas de cliente (fichas.js), com a conversa de cada um */
 function contatosCom() {
   const fs = typeof fichasTodas === 'function' ? fichasTodas() : [];
+  /* quem se cadastrou no app e ainda não reservou também é contato */
+  for (const k of DB.clientesApp || []) {
+    if (fs.some(f => f.id === k.id || (soDig(k.whats).length >= 8 && soDig(f.whats) === soDig(k.whats)))) continue;
+    fs.push({ id: k.id, nome: k.nome, whats: k.whats, email: k.email, insta: '', itens: [], notas: {}, proximo: null, vezes: 0, total: 0, pago: 0, aReceber: 0, origem: 'app' });
+  }
   return fs.map(f => {
     const c = (DB.conversas || {})[f.id] || { app: false, push: false, msgs: [] };
     const ult = c.msgs[c.msgs.length - 1] || null;
@@ -87,7 +92,7 @@ function comSemeia() {
   const acha = (nome) => fs.find(f => String(f.nome).startsWith(nome));
   const ago = (min) => new Date(Date.now() - min * 60000).toISOString();
   const c = comConversas();
-  const poe = (nome, app, push, msgs) => { const f = acha(nome); if (!f) return; c[f.id] = { app, push, msgs: msgs.map(m => ({ id: comId(), lida: true, ...m })) }; };
+  const poe = (nome, app, push, msgs) => { const f = acha(nome); if (!f) return; c[f.id] = { app, push, msgs: msgs.map(m => ({ id: comId(), lida: true, vista: true, ...m })) }; };
   poe('Mariana', true, true, [
     { de: 'roberto', canal: 'app', em: ago(60 * 26), txt: 'Olá, Mariana! Aqui é o Roberto, da Freddy Turismo 😊 Seu City Tour está confirmado. Vou buscar vocês no Park Plaza Westminster Bridge às 8h.' },
     { de: 'cliente', canal: 'app', em: ago(60 * 25), txt: 'Perfeito, Roberto! Somos 4, com uma mala de mão só. Dá pra ver a Troca da Guarda?' },
@@ -175,11 +180,11 @@ async function comNotifica(titulo, corpo, url) {
     return true;
   } catch (e) { return false; }
 }
-function comEnviaApp(id, txt, canal = 'app') {
+function comEnviaApp(id, txt, canal = 'app', quieto = false) {
   const c = conversaDe(id);
   c.msgs.push({ id: comId(), de: 'roberto', canal, em: new Date().toISOString(), txt, lida: true });
   comGrava();
-  if (c.app) comNotifica('Freddy Turismo · Roberto', txt.length > 140 ? txt.slice(0, 137) + '…' : txt, './#/mensagens');
+  if (c.app && !quieto) comNotifica('Freddy Turismo · Roberto', txt.length > 140 ? txt.slice(0, 137) + '…' : txt, './#/mensagens');
   return c;
 }
 function comLinkInsta(f) { const u = String(f.insta || '').replace(/^@/, ''); return u ? 'https://ig.me/m/' + encodeURIComponent(u) : 'https://www.instagram.com/direct/inbox/'; }
@@ -388,20 +393,67 @@ if (typeof viewFicha === 'function') {
    No protótipo, a pessoa vê como se fosse a primeira cliente de exemplo
    que tem o app. Com a nuvem, entra pelo link do voucher / login do cliente.
    ===================================================== */
+/* quem está usando o app NESTE aparelho: quem se cadastrou aqui, ou (no
+   protótipo) a cliente de exemplo que a pessoa escolheu ver */
 function comClienteAtual() {
   comSemeia();
-  const lista = contatosCom().filter(x => x.c.app);
-  /* fica sempre a mesma pessoa (a primeira com o app, por nome), não a da última mensagem */
-  if (!DB.comClienteId || !lista.some(x => x.f.id === DB.comClienteId)) {
-    const ord = lista.slice().sort((a, b) => String(a.f.nome).localeCompare(String(b.f.nome)));
-    const pref = ord.find(x => /^Mariana/.test(x.f.nome)) || ord[0];
-    if (pref) { DB.comClienteId = pref.f.id; comGrava(); }
-  }
-  const id = DB.comClienteId;
-  return lista.find(x => x.f.id === id) || null;
+  if (!DB.clienteLogado) return null;
+  return contatosCom().find(x => x.f.id === DB.clienteLogado) || null;
 }
+function comNaoVistas() {
+  const x = DB.clienteLogado && (DB.conversas || {})[DB.clienteLogado];
+  return x ? x.msgs.filter(m => m.de === 'roberto' && !m.vista).length : 0;
+}
+/* ícone no topo do app: "Entrar" antes do cadastro; depois, as mensagens */
+function comBotaoTopo() {
+  const n = comNaoVistas();
+  return DB.clienteLogado
+    ? `<button class="fdConta" id="fdConta" aria-label="Mensagens">💬<span>Mensagens</span>${n ? `<i class="comBadge">${n}</i>` : ''}</button>`
+    : `<button class="fdConta" id="fdConta">👤<span>Entrar</span></button>`;
+}
+function comLigaBotaoTopo() { const b = document.getElementById('fdConta'); if (b) b.onclick = () => go('/mensagens'); }
+
+/* cadastro do cliente: libera a rede de mensagens */
+function viewCadastroCliente() {
+  const ex = contatosCom().filter(x => x.c.app).sort((a, b) => String(a.f.nome).localeCompare(String(b.f.nome)));
+  const mari = ex.find(x => /^Mariana/.test(x.f.nome)) || ex[0];
+  app.innerHTML = `${topoCarol()}
+  <main class="wrap narrow comCliente">
+    <h1 class="pageh">Sua área na Freddy Turismo</h1>
+    <p class="why">Crie a sua conta e fale direto com o Roberto, dentro do app: horário e ponto de busca, motorista do dia, mudanças de voo. Os avisos chegam como notificação no seu celular, e a conversa fica guardada.</p>
+    <div class="card comCad">
+      <label class="fld">Seu nome<input id="cdNome" autocomplete="name" placeholder="Nome e sobrenome"></label>
+      <label class="fld">WhatsApp (com DDI)<input id="cdWhats" type="tel" autocomplete="tel" placeholder="+55 11 …"></label>
+      <label class="fld">E-mail <small class="why">opcional</small><input id="cdEmail" type="email" autocomplete="email"></label>
+      <label class="optin"><input type="checkbox" id="cdOk"><span><b>Aceito receber mensagens da Freddy Turismo</b><small>Só sobre a minha viagem. Saio quando quiser.</small></span></label>
+      <button class="cta" id="cdCriar">Criar minha conta</button>
+    </div>
+    <p class="fine">📲 Dica: instale o app na tela de início do celular para receber os avisos (no iPhone: Compartilhar → Adicionar à Tela de Início).</p>
+    ${mari ? `<button class="linkbtn" id="cdExemplo">Protótipo: ver como a cliente de exemplo (${esc(primeiroNome(mari.f.nome))})</button>` : ''}
+  </main>`;
+  ligaVoltar('/');
+  $('#cdCriar').onclick = () => {
+    const nome = $('#cdNome').value.trim(), whats = $('#cdWhats').value.trim(), email = $('#cdEmail').value.trim();
+    if (nome.length < 2) { toast('Escreva o seu nome.'); $('#cdNome').focus(); return; }
+    if (soDig(whats).length < 8) { toast('Escreva o seu WhatsApp com DDI.'); $('#cdWhats').focus(); return; }
+    if (!$('#cdOk').checked) { toast('Marque que aceita receber as mensagens.'); return; }
+    const id = (typeof chaveFicha === 'function') ? chaveFicha({ whats, email, name: nome }) : 'app' + Date.now();
+    DB.clientesApp = (DB.clientesApp || []).filter(k => k.id !== id);
+    DB.clientesApp.push({ id, nome, whats, email, em: new Date().toISOString() });
+    const c = conversaDe(id); c.app = true;
+    if (!c.msgs.length) c.msgs.push({ id: comId(), de: 'roberto', canal: 'app', em: new Date().toISOString(), lida: true,
+      txt: `Olá, ${primeiroNome(nome)}! Aqui é o Roberto, da Freddy Turismo 😊 Bem-vindo ao nosso app. Por aqui eu mando tudo da sua viagem e você fala comigo direto. Em que posso ajudar?` });
+    DB.clienteLogado = id; comGrava();
+    viewMensagensCliente();
+  };
+  if ($('#cdExemplo')) $('#cdExemplo').onclick = () => { DB.clienteLogado = mari.f.id; comGrava(); viewMensagensCliente(); };
+}
+
 function viewMensagensCliente() {
   const x = comClienteAtual();
+  if (!x) return viewCadastroCliente();
+  let viu = false; x.c.msgs.forEach(m => { if (m.de === 'roberto' && !m.vista) { m.vista = true; viu = true; } });
+  if (viu) { (DB.conversas[x.f.id] || {}).msgs = x.c.msgs; comGrava(); }
   const pode = 'Notification' in window;
   const perm = pode ? Notification.permission : 'nao';
   const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) && !(window.navigator.standalone || matchMedia('(display-mode: standalone)').matches);
@@ -411,7 +463,7 @@ function viewMensagensCliente() {
       <span class="comCliLogo" aria-hidden="true">${logoMark(26, '#FFFFFF')}</span>
       <div><h1 class="pageh">Fale com o Roberto</h1><small>Freddy Turismo · responde em português, inglês, italiano e espanhol</small></div>
     </header>
-    ${x ? `<p class="comComo">Você está vendo como <b>${esc(x.f.nome)}</b> <em class="exTag">exemplo do protótipo</em></p>` : ''}
+    <p class="comComo">Olá, <b>${esc(primeiroNome(x.f.nome))}</b>${(DB.clientesApp || []).some(k => k.id === x.f.id) ? '' : ' <em class="exTag">cliente de exemplo do protótipo</em>'} · <button class="linkbtn comSair" id="comSair">sair</button></p>
     <div class="comAvisoNotif ${perm === 'granted' ? 'ok' : ''}" id="comNotif">
       ${perm === 'granted' ? '🔔 Notificações ligadas: os avisos do Roberto chegam no seu celular.'
         : ios ? '📲 Para receber os avisos no iPhone: toque em <b>Compartilhar</b> → <b>Adicionar à Tela de Início</b>, abra o app pelo ícone e volte aqui.'
@@ -425,6 +477,7 @@ function viewMensagensCliente() {
     </div>` : `<p class="empty">Assim que você reservar, a conversa com o Roberto aparece aqui.</p>`}
   </main>`;
   ligaVoltar('/');
+  $('#comSair').onclick = () => { DB.clienteLogado = ''; comGrava(); go('/'); };
   const box = $('#comMsgs'); if (box) box.scrollTop = box.scrollHeight;
   const liga = $('#comLiga');
   if (liga) liga.onclick = async () => {

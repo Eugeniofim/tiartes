@@ -29,6 +29,25 @@ Base: cópia do demo "Londres com a Bia" (`app-guia/londres`, v0.1.6).
   - lado do cliente: vitrine → Mensagens (`#/mensagens`), com o botão de ligar
     as notificações e a instrução do iPhone.
 
+## Mudanças de 15/10/2026 (pedidos do Eugênio)
+
+- A conversa **não fica na vitrine**: é coisa de dentro do app. O cliente
+  baixa, faz o cadastro (nome + WhatsApp) pelo botão "Entrar" no topo e entra
+  na rede de mensagens; depois o botão vira "💬 Mensagens" com contador.
+- Vitrine: saíram Mensagens e Avaliações; entraram **Quanto custa o meu
+  transfer?** (cotação na hora, `freddy.js → COTACAO`, valores de exemplo) e
+  **Dicas de Londres** (`DICAS`).
+- Painel: saiu **Agências** (o Roberto não trabalha com invoice de agência).
+- Aba nova **Notificações** (`notificacoes.js`): avisos automáticos
+  (reserva confirmada, saldo, ingressos, véspera, "saindo para te buscar",
+  obrigado + avaliação, saudade 6 meses), liga/desliga, texto editável com
+  {nome} {servico}…, fila dos próximos 7 dias, criar aviso novo. O que vence
+  sai sozinho no app e cai na conversa da Comunicação.
+- Aba nova **Contabilidade** (`financas.js`): despesas por categoria e por
+  carro, lucro, margem, guardar para imposto (%), mês / ano fiscal UK / ano,
+  estatísticas (ticket médio, o que vende, origem, volta, dia da semana, uso
+  dos carros) e CSV para o contador.
+
 ## Para a entrega (com nuvem)
 
 1. Projeto Supabase (ou sala `freddy` no banco da Ti Artes) + `SEGURANCA.sql`;

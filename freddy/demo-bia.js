@@ -48,30 +48,26 @@ function demoCarol(db) {
   bk({ tourId: 'city-tour', date: d(15), time: '08:00', horas: 8, pax: 4, name: 'Paula Castro', email: 'castro@exemplo.com', whats: '+55 19 98989 1212', sinal: true, criado: d(-1), origin: 'site', hotel: 'Hotel perto de Covent Garden' });
 
   /* ---- AGÊNCIAS (empresas que contratam o guia por e-mail) ---- */
-  db.agencias = [
-    { id: 'ag1', nome: 'Viagens Aurora', cidade: 'São Paulo', contato: 'Renata (operações)', email: 'operacoes@viagensaurora.exemplo', whats: '+55 11 3000 1111',
-      pagamento: 'Paga todo dia 10 do mês seguinte, se a invoice chegar até o dia 25', diaCorte: 25, diaPagamento: 10, moeda: 'GBP', prioridade: true, exemplo: true },
-    { id: 'ag2', nome: 'Mundo Afora Turismo', cidade: 'Curitiba', contato: 'Eduardo', email: 'reservas@mundoafora.exemplo', whats: '+55 41 3000 2222',
-      pagamento: '30 dias depois da invoice', prazoDias: 30, moeda: 'GBP', prioridade: true, exemplo: true },
-    { id: 'ag3', nome: 'Rota Europa DMC', cidade: 'Lisboa', contato: 'Inês', email: 'ops@rotaeuropa.exemplo', whats: '+351 21 000 3333',
-      pagamento: '15 dias depois da invoice', prazoDias: 15, moeda: 'GBP', prioridade: true, exemplo: true },
+  /* HISTÓRICO (15/10/2026): serviços já feitos nos últimos meses, para a
+     Contabilidade e as Estatísticas terem o que mostrar */
+  const H = [
+    ['city-tour', -15, 3, 'Beatriz Moura', 'instagram'], ['windsor-stonehenge', -19, 5, 'Família Arantes', 'site'], ['harry-potter', -23, 4, 'Gustavo Lemos', 'whatsapp'],
+    ['oxford', -28, 2, 'Renata e Paulo', 'instagram'], ['city-tour', -33, 6, 'Grupo Sampaio', 'friend'], ['stonehenge-bath', -38, 2, 'Lucas Prado', 'google'],
+    ['futebol', -44, 3, 'Thiago Rezende', 'instagram'], ['cotswolds-stratford', -49, 4, 'Família Nogueira', 'site'], ['city-tour', -52, 2, 'Aline Castro', 'instagram'],
+    ['outlets', -58, 3, 'Carla Mendes', 'whatsapp'], ['windsor-stonehenge', -63, 7, 'Grupo Fonseca', 'friend'], ['cambridge', -69, 2, 'Diego e Marina', 'google'],
+    ['harry-potter', -74, 5, 'Família Duarte', 'instagram'], ['city-tour', -80, 4, 'Vanessa Lima', 'site'], ['leeds-canterbury', -86, 3, 'Roberta Alves', 'instagram'],
+    ['oxford', -92, 2, 'Felipe Moraes', 'friend'], ['stonehenge-bath', -99, 6, 'Grupo Teixeira', 'whatsapp'], ['city-tour', -106, 3, 'Sabrina Rocha', 'instagram'],
   ];
-  /* trabalhos feitos (ou marcados) para as agências. Ocupam o dia como qualquer tour. */
-  db.trabalhosAgencia = [
-    { id: 'tj1', agencia: 'ag1', data: d(-8), servico: 'City tour privativo 8h (Mercedes V-Class + guia)', pax: 4, cliente: 'Grupo Sr. Almeida', valor: 820, status: 'feito',
-      invoice: { numero: '', emitida: '', enviada: '', vence: '', paga: '' }, exemplo: true },
-    { id: 'tj2', agencia: 'ag2', data: d(-22), servico: 'Transfer Heathrow → hotel + City tour (6h)', pax: 6, cliente: 'Família Moraes', valor: 420, status: 'feito',
-      invoice: { numero: 'FT-INV-2026-014', emitida: d(-20), enviada: d(-20), vence: d(10), paga: '' }, exemplo: true },
-    { id: 'tj3', agencia: 'ag3', data: d(-35), servico: 'Windsor, Stonehenge e Salisbury (10h)', pax: 3, cliente: 'Casal Ferreira', valor: 680, status: 'feito',
-      invoice: { numero: 'FT-INV-2026-011', emitida: d(-33), enviada: d(-33), vence: d(-18), paga: d(-17) }, exemplo: true },
-    { id: 'tj4', agencia: 'ag2', data: d(6), servico: 'Bate-volta Oxford e Bicester (8h)', pax: 4, cliente: 'Grupo Bianchi', valor: 360, status: 'marcado',
-      invoice: { numero: '', emitida: '', enviada: '', vence: '', paga: '' }, exemplo: true },
-  ];
+  H.forEach(([tourId, dia, pax, name, origin], i) => {
+    const x = db.tours.find(t => t.id === tourId); const h = (x && x.pacotes && x.pacotes[0] && x.pacotes[0].h) || 8;
+    bk({ tourId, date: d(dia), time: '08:00', horas: h, pax, name, email: 'cliente' + i + '@exemplo.com', whats: '+55 11 9' + String(70000000 + i * 1371).slice(0, 8),
+      sinal: true, quitado: true, criado: d(dia - 12 - (i % 5) * 6), origin, metodo: i % 4 === 0 ? 'pix' : 'card' });
+  });
+  /* agências: o Roberto não usa (15/10/2026) */
+  db.agencias = [];
+  db.trabalhosAgencia = [];
   /* e-mails que o assistente "varreu" (a caixa da guia) */
   db.emails = [
-    { id: 'em1', de: 'reservas@mundoafora.exemplo', nome: 'Mundo Afora Turismo', assunto: 'Solicitação de guia PT — 4 pax — city tour 4h', chegou: agoraIso,
-      resumo: 'Pedem guia em português para 4 pessoas no dia ' + d(3).split('-').reverse().join('/') + ', city tour de 8h de carro saindo do The Savoy. Pedem confirmação até amanhã.',
-      tipo: 'agencia', agencia: 'ag2', data: d(3), pax: 4, tratado: false, exemplo: true },
     { id: 'em2', de: 'rodrigo.mendes@exemplo.com', nome: 'Rodrigo Mendes (formulário do site)', assunto: 'Transfer + city tour — 3 pessoas', chegou: d(-1) + 'T18:40:00.000Z',
       resumo: 'Rodrigo Mendes quer transfer de Heathrow e o City Tour para 3 pessoas em ' + d(14).split('-').reverse().join('/') + '. Deixou WhatsApp +55 11 91111 8008.',
       tipo: 'cliente', data: d(14), pax: 3, whats: '+55 11 91111 8008', tratado: false, exemplo: true },
