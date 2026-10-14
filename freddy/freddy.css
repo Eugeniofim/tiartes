@@ -1,0 +1,112 @@
+/* =====================================================
+   FREDDY TURISMO — vitrine enxuta e a aba Comunicação (14/10/2026)
+   Cores só de tokens.css (verde-turquesa + água).
+   ===================================================== */
+
+/* ---------- vitrine ---------- */
+.fdHub{min-height:100vh;background:var(--paper);padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+.fdTopo{position:relative;height:min(46vh,380px);background-size:cover;background-position:center 45%;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:max(14px,env(safe-area-inset-top)) 16px 0}
+.fdTopo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,33,31,.55) 0%,rgba(4,33,31,.05) 42%,rgba(4,33,31,.45) 100%);pointer-events:none}
+.fdRedes{position:relative;z-index:1;display:flex;gap:8px;flex-wrap:wrap}
+.fdRede{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.92);color:#0A3B3A;box-shadow:0 6px 18px -8px rgba(0,0,0,.6);transition:transform var(--d-fast) var(--spring)}
+.fdRede svg{width:19px;height:19px;display:block}
+.fdRede.ig{background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff}
+.fdRede.wa{background:#25D366;color:#fff}
+.fdRede.fb{background:#1877F2;color:#fff}
+.fdRede:hover{transform:translateY(-2px)}
+.fdRede:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.fdLangs{position:relative;z-index:1;background:rgba(255,255,255,.9);border-radius:var(--r-pill);padding:2px}
+.fdCr{position:absolute;right:10px;bottom:8px;z-index:1;font-size:10px;color:rgba(255,255,255,.75)}
+.fdIn{position:relative;width:min(460px,calc(100% - 32px));margin:-70px auto 0;display:flex;flex-direction:column;gap:10px}
+.fdCard{background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--sh-3);padding:22px 20px 18px;text-align:center}
+.fdLogo{display:flex;justify-content:center}
+.fdLogo img{max-width:100%;height:auto!important;max-height:58px}
+.fdLema{font-family:var(--f-display);font-weight:700;font-size:var(--fs-5);color:var(--accent);margin-top:12px}
+.fdTag{font-size:var(--fs-3);color:var(--ink-2);margin-top:6px}
+.fdSelos{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:12px}
+.fdSelos span{font-size:11.5px;font-weight:700;letter-spacing:.02em;padding:4px 10px;border-radius:var(--r-pill);background:var(--accent-wash);color:var(--accent)}
+.fdHub .lk{background:var(--surface)}
+.fdHub .lk .ic{background:var(--accent-wash);color:var(--accent)}
+.fdHub .lk .ic svg{width:20px;height:20px}
+.fdHub .lk.main{background:var(--accent);color:var(--accent-ink)}
+.fdHub .lk.main .ic{background:rgba(255,255,255,.16);color:#fff}
+.fdHub .lk.main small{color:rgba(255,255,255,.82)}
+.fdHub .lk.main .go{color:var(--highlight)}
+.fdRodape{text-align:center;font-size:var(--fs-2);color:var(--ink-3);margin-top:8px}
+.fdFrotaTit{margin-top:26px}
+.fdFrota{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:10px 0}
+.fdCarro{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--sh-1);padding:14px;display:flex;flex-direction:column;gap:3px}
+.fdCarro .ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--accent-wash);color:var(--accent);margin-bottom:6px}
+.fdCarro .ic svg{width:20px;height:20px}
+.fdCarro em{font-style:normal;font-size:var(--fs-2);font-weight:700;color:var(--accent)}
+
+/* ---------- Comunicação: painel ---------- */
+.comGrade{display:grid;grid-template-columns:300px 1fr;gap:14px;align-items:start;margin-top:12px}
+.comLista{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--sh-1);padding:8px;display:flex;flex-direction:column;gap:2px;max-height:72vh;overflow:auto}
+.comBusca{margin-bottom:6px}
+.comItem{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;text-align:left;padding:9px 8px;border-radius:var(--r)}
+.comItem:hover{background:var(--surface-2)}
+.comItem.on{background:var(--accent-wash)}
+.comAv{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-family:var(--f-display);font-weight:700}
+.comTx{min-width:0}.comTx b{display:block;font-size:var(--fs-3)}
+.comTx small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.comMeta{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.comMeta small{font-size:10.5px}
+.comBadge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:var(--highlight);color:var(--highlight-ink);font:700 11px var(--f-ui);font-style:normal}
+.comSino{font-style:normal;font-size:13px}.comSino.off{opacity:.6}
+.comChat{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--sh-1);display:flex;flex-direction:column;min-height:60vh;overflow:hidden}
+.comVazio{margin:auto;padding:30px;text-align:center;display:flex;flex-direction:column;gap:6px;max-width:380px}
+.comCab{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.comQuem{flex:1;min-width:0}.comQuem b{display:block}.comQuem small{display:block}
+.comVolta{display:none}
+.comMsgs{flex:1;padding:14px;display:flex;flex-direction:column;gap:8px;overflow:auto;max-height:52vh;
+  background:linear-gradient(var(--surface-2),var(--surface-2))}
+.comMsg{max-width:78%;padding:9px 12px 6px;border-radius:14px;box-shadow:0 1px 1px rgba(0,0,0,.06)}
+.comMsg p{font-size:var(--fs-3);line-height:1.5}
+.comMsg small{display:block;text-align:right;font-size:10.5px;margin-top:3px}
+.comMsg.ele{align-self:flex-start;background:var(--surface);border-bottom-left-radius:4px}
+.comMsg.eu{align-self:flex-end;background:var(--accent);color:var(--accent-ink);border-bottom-right-radius:4px}
+.comMsg.eu small{color:rgba(255,255,255,.8)}
+.comMsg.aviso{border:1px dashed var(--highlight)}
+.comDia,.comInicio{align-self:center;font-size:11px;color:var(--ink-3);background:var(--surface);padding:3px 10px;border-radius:99px}
+.comCompor{padding:12px 14px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.comIA{display:flex;gap:8px}
+.comBtns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.comEsp{flex:1}
+.comWa{background:#25D366!important;color:#fff!important}
+.comBtns button:disabled{opacity:.45;cursor:not-allowed}
+.comResumo{align-self:flex-start;font-size:var(--fs-3);font-weight:700;color:var(--accent);padding:6px 0;text-decoration:underline;text-underline-offset:3px}
+.comResumo:disabled{opacity:.45;text-decoration:none}
+.comAvisoCard{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.comPara{font-size:var(--fs-3)}
+.comHoje{display:flex;align-items:center;gap:12px;margin:10px 0 14px;padding:14px 16px;border-radius:var(--r-lg);background:var(--highlight-wash);border:1px solid var(--highlight);color:var(--ink)}
+.comHoje>span:first-child{font-size:22px}
+.comHoje b{display:block}.comHoje small{display:block}
+.comHoje .go{margin-left:auto;font-weight:700}
+.nb .comBadge{margin-left:4px}
+@media (max-width:820px){
+  .comGrade{grid-template-columns:1fr}
+  .comGrade.comAberto .comLista{display:none}
+  .comGrade:not(.comAberto) .comChat{display:none}
+  .comVolta{display:inline-grid}
+  .comMsgs{max-height:none;min-height:46vh}
+  .comMsg{max-width:88%}
+}
+
+/* ---------- Mensagens: lado do cliente ---------- */
+.comCliente{display:flex;flex-direction:column;gap:12px}
+.comCliCab{display:flex;align-items:center;gap:12px}
+.comCliLogo{width:44px;height:44px;border-radius:50%;background:var(--accent);padding:7px}
+.comCliCab .pageh{margin:0}
+.comComo{font-size:var(--fs-3);color:var(--ink-2)}
+.comAvisoNotif{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:var(--r-lg);background:var(--highlight-wash);font-size:var(--fs-3)}
+.comAvisoNotif.ok{background:var(--ok-wash);color:var(--ok)}
+.comAvisoNotif span{flex:1;min-width:180px}
+.comMsgs.cli{border-radius:var(--r-lg);min-height:42vh;max-height:56vh}
+.comCompor.cli{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--sh-1);border:0}
+.fdCr{bottom:78px}
+.fdTopo .langsel{max-width:118px}
+.comIA[hidden]{display:none}
+.comCliLogo{display:grid;place-items:center;flex:none}
+.comCliente{padding-bottom:190px}
