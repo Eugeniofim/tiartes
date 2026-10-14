@@ -1,13 +1,13 @@
 {
-  "name": "Freddy Turismo",
+  "name": "Freddy Turismo London",
   "short_name": "Freddy Turismo",
-  "description": "Demo: tours privados em Freddy Turismo, guia brasileira (guia fictícia).",
+  "description": "Transfers e passeios privativos de Mercedes em Londres, com motorista-guia brasileiro.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#4A1D6E",
-  "theme_color": "#4A1D6E",
+  "background_color": "#04211F",
+  "theme_color": "#0B6E69",
   "lang": "pt-BR",
   "icons": [
     {
